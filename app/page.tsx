@@ -1,5 +1,7 @@
 'use client';
 import { useState, useRef } from 'react';
+import Head from 'next/head';
+import Image from 'next/image';
 import Navigation from './components/Navigation';
 import LyricsDisplay from './components/LyricsDisplay';
 
@@ -270,24 +272,24 @@ export default function Home() {
     }
   };
 
-  const downloadSong = async () => {
-    if (!audioUrl) return;
-
-    try {
-      const response = await fetch(audioUrl);
-      const blob = await response.blob();
-      const url = window.URL.createObjectURL(blob);
-      const a = document.createElement('a');
-      a.href = url;
-      a.download = `${songTitle || 'song'}.mp3`;
-      document.body.appendChild(a);
-      a.click();
-      window.URL.revokeObjectURL(url);
-      document.body.removeChild(a);
-    } catch {
-      setError('Failed to download song. Please try again.');
-    }
-  };
+  // Download song function - currently unused but available for future use
+  // const downloadSong = async () => {
+  //   if (!audioUrl) return;
+  //   try {
+  //     const response = await fetch(audioUrl);
+  //     const blob = await response.blob();
+  //     const url = window.URL.createObjectURL(blob);
+  //     const a = document.createElement('a');
+  //     a.href = url;
+  //     a.download = `${songTitle || 'song'}.mp3`;
+  //     document.body.appendChild(a);
+  //     a.click();
+  //     window.URL.revokeObjectURL(url);
+  //     document.body.removeChild(a);
+  //   } catch {
+  //     setError('Failed to download song. Please try again.');
+  //   }
+  // };
 
   const checkCredits = async () => {
     const activeKey = apiKey;
@@ -456,24 +458,24 @@ export default function Home() {
     setVideoGenerating(false);
   };
 
-  const downloadVideo = async () => {
-    if (!videoUrl) return;
-
-    try {
-      const response = await fetch(videoUrl);
-      const blob = await response.blob();
-      const url = window.URL.createObjectURL(blob);
-      const a = document.createElement('a');
-      a.href = url;
-      a.download = `${songTitle || 'song'}_video.mp4`;
-      document.body.appendChild(a);
-      a.click();
-      window.URL.revokeObjectURL(url);
-      document.body.removeChild(a);
-    } catch {
-      setError('Failed to download video. Please try again.');
-    }
-  };
+  // Download video function - currently unused but available for future use
+  // const downloadVideo = async () => {
+  //   if (!videoUrl) return;
+  //   try {
+  //     const response = await fetch(videoUrl);
+  //     const blob = await response.blob();
+  //     const url = window.URL.createObjectURL(blob);
+  //     const a = document.createElement('a');
+  //     a.href = url;
+  //     a.download = `${songTitle || 'song'}_video.mp4`;
+  //     document.body.appendChild(a);
+  //     a.click();
+  //     window.URL.revokeObjectURL(url);
+  //     document.body.removeChild(a);
+  //   } catch {
+  //     setError('Failed to download video. Please try again.');
+  //   }
+  // };
 
   const generateCover = async (taskId: string) => {
     setCoverGenerating(true);
@@ -785,7 +787,7 @@ export default function Home() {
                     ></iframe>
                   </div>
                   <p className="text-xs text-gray-500 mt-2 italic">
-                    💡 Tip: Describe what you like about this music in your prompt below (e.g., "similar vocals", "same energy", "this genre")
+                    💡 Tip: Describe what you like about this music in your prompt below (e.g., &quot;similar vocals&quot;, &quot;same energy&quot;, &quot;this genre&quot;)
                   </p>
                 </div>
               )}
@@ -882,10 +884,13 @@ export default function Home() {
               </audio>
               {coverImages.length > 0 && (
                 <div className="flex justify-center">
-                  <img
+                  <Image
                     src={coverImages[0]}
                     alt="Album Cover"
+                    width={500}
+                    height={500}
                     className="max-w-md w-full rounded-lg shadow-lg hover:shadow-xl transition"
+                    unoptimized
                   />
                 </div>
               )}
