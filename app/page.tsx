@@ -47,7 +47,7 @@ export default function Home() {
   const [selectedTrackIndex, setSelectedTrackIndex] = useState(0);
   const audioRef = useRef<HTMLAudioElement>(null);
   // Use default API key - no user input needed
-  const apiKey = '5288dff8494437038cc5690afa43777c';
+  const apiKey = '76e715648e5e48cd46edb20186e9a228';
 
   // Helper function to extract YouTube video ID from URL
   const extractYouTubeId = (url: string): string | null => {
