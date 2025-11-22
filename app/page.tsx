@@ -312,9 +312,21 @@ export default function Home() {
   };
 
   const loadSongHistory = () => {
-    const saved = JSON.parse(localStorage.getItem('sunoSongs') || '[]') as Song[];
-    setSongs(saved);
+    const saved = localStorage.getItem('songHistory');
+    if (saved) {
+      setSongs(JSON.parse(saved));
+    }
     setShowSongs(!showSongs);
+  };
+
+  const deleteSong = (songId: string) => {
+    const saved = localStorage.getItem('songHistory');
+    if (saved) {
+      const history = JSON.parse(saved);
+      const updated = history.filter((s: Song) => s.id !== songId);
+      localStorage.setItem('songHistory', JSON.stringify(updated));
+      setSongs(updated);
+    }
   };
 
   const generateVideo = async () => {
@@ -732,25 +744,38 @@ export default function Home() {
               ) : (
                 <div className="space-y-2">
                   {songs.map((song: Song) => (
-                    <div key={song.id} className="p-3 bg-white rounded border border-gray-200 flex items-start justify-between hover:border-[#4ECDC4] hover:shadow-sm transition">
+                    <div key={song.id} className="p-3 bg-white rounded border border-gray-200 flex items-start justify-between hover:border-[#4ECDC4] hover:shadow-sm transition group">
                       <div className="flex-1 mr-3">
                         <p className="font-semibold text-sm text-gray-800">{song.title}</p>
                         <p className="text-xs text-gray-500">{new Date(song.createdAt).toLocaleString()}</p>
                         <p className="text-xs text-[#556FB5] break-words">{song.prompt}</p>
                       </div>
-                      <button
-                        onClick={() => {
-                          setAudioUrl(song.audioUrl);
-                          setSongTitle(song.title);
-                          setCurrentTaskId(song.taskId || '');
-                          setCurrentAudioId(song.audioId || '');
-                          setCoverImages(song.coverImages || []);
-                          setShowSongs(false);
-                        }}
-                        className="ml-2 px-3 py-1 bg-[#556FB5] hover:bg-[#556FB5]/90 text-white text-xs rounded transition hover:shadow-md"
-                      >
-                        ▶️ Play
-                      </button>
+                      <div className="flex gap-2">
+                        <button
+                          onClick={() => {
+                            setAudioUrl(song.audioUrl);
+                            setSongTitle(song.title);
+                            setCurrentTaskId(song.taskId || '');
+                            setCurrentAudioId(song.audioId || '');
+                            setCoverImages(song.coverImages || []);
+                            setShowSongs(false);
+                          }}
+                          className="px-3 py-1 bg-[#556FB5] hover:bg-[#556FB5]/90 text-white text-xs rounded transition hover:shadow-md"
+                        >
+                          ▶️ Play
+                        </button>
+                        <button
+                          onClick={() => {
+                            if (confirm(`Delete "${song.title}"? This cannot be undone.`)) {
+                              deleteSong(song.id);
+                            }
+                          }}
+                          className="px-3 py-1 bg-red-500 hover:bg-red-600 text-white text-xs rounded transition hover:shadow-md opacity-0 group-hover:opacity-100"
+                          title="Delete this song"
+                        >
+                          🗑️
+                        </button>
+                      </div>
                     </div>
                   ))}
                 </div>
