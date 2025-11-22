@@ -201,9 +201,9 @@ export default function Home() {
             audioId: tracks[0].audioId || '',
             coverImages: tracks[0].imageUrl ? [tracks[0].imageUrl] : []
           };
-          const saved = JSON.parse(localStorage.getItem('sunoSongs') || '[]') as Song[];
+          const saved = JSON.parse(localStorage.getItem('songHistory') || '[]') as Song[];
           saved.unshift(song);
-          localStorage.setItem('sunoSongs', JSON.stringify(saved.slice(0, 50))); // Keep last 50
+          localStorage.setItem('songHistory', JSON.stringify(saved.slice(0, 50))); // Keep last 50
           
           return;
         } else if (data.status === 'FAILED') {
@@ -272,24 +272,23 @@ export default function Home() {
     }
   };
 
-  // Download song function - currently unused but available for future use
-  // const downloadSong = async () => {
-  //   if (!audioUrl) return;
-  //   try {
-  //     const response = await fetch(audioUrl);
-  //     const blob = await response.blob();
-  //     const url = window.URL.createObjectURL(blob);
-  //     const a = document.createElement('a');
-  //     a.href = url;
-  //     a.download = `${songTitle || 'song'}.mp3`;
-  //     document.body.appendChild(a);
-  //     a.click();
-  //     window.URL.revokeObjectURL(url);
-  //     document.body.removeChild(a);
-  //   } catch {
-  //     setError('Failed to download song. Please try again.');
-  //   }
-  // };
+  const downloadSong = async (url: string, title: string) => {
+    if (!url) return;
+    try {
+      const response = await fetch(url);
+      const blob = await response.blob();
+      const downloadUrl = window.URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = downloadUrl;
+      a.download = `${title || 'song'}.mp3`;
+      document.body.appendChild(a);
+      a.click();
+      window.URL.revokeObjectURL(downloadUrl);
+      document.body.removeChild(a);
+    } catch {
+      setError('Failed to download song. Please try again.');
+    }
+  };
 
   const checkCredits = async () => {
     const activeKey = apiKey;
@@ -761,8 +760,16 @@ export default function Home() {
                             setShowSongs(false);
                           }}
                           className="px-3 py-1 bg-[#556FB5] hover:bg-[#556FB5]/90 text-white text-xs rounded transition hover:shadow-md"
+                          title="Play this song"
                         >
-                          ▶️ Play
+                          ▶️
+                        </button>
+                        <button
+                          onClick={() => downloadSong(song.audioUrl, song.title)}
+                          className="px-3 py-1 bg-green-600 hover:bg-green-700 text-white text-xs rounded transition hover:shadow-md"
+                          title="Download this song"
+                        >
+                          ⬇️
                         </button>
                         <button
                           onClick={() => {
@@ -920,6 +927,14 @@ export default function Home() {
                 </div>
               )}
               <div className="flex gap-2">
+                <button
+                  onClick={() => downloadSong(audioUrl, songTitle)}
+                  disabled={!audioUrl}
+                  className="flex-1 bg-green-600 hover:bg-green-700 text-white py-3 rounded-lg font-semibold transition flex items-center justify-center space-x-2 hover:shadow-md disabled:opacity-50 disabled:cursor-not-allowed"
+                >
+                  <span>⬇️</span>
+                  <span>Download Song</span>
+                </button>
                 <button
                   onClick={() => generateCover(currentTaskId)}
                   disabled={coverGenerating || !currentTaskId || coverImages.length > 0}
